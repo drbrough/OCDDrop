@@ -22,9 +22,25 @@ private var nudge = [new Vector3(0, 0, 0.5), new Vector3(0.5, 0, 0), new Vector3
 //track the rooms already in place
 private var seenIt = new Array();
 
-function buildRoom (roomDepth : float, roomWidth : float, roomID : long, roomDoors : Array, from : int, roomHubX : float, roomHubZ : float)
+/*
+ * First divide the parameter into useful constitutant parts and then uses those parts to create the room
+ * @ param: String consisting of roomDepth : float, roomWidth : float, roomID : long, roomHubX : float, roomHubZ : float, from : int, roomDoors : Array
+ */
+function buildRoom (roomDetailsIn : String)
 {
-	//directions for adding walls
+	//variables for detailing the room
+	var roomDepth : float;
+	var roomWidth : float;
+	var roomHubX : float;
+	var roomHubZ : float;
+	
+	var roomID : long;
+	
+	var from : int;
+	
+	var roomDoors : Array;
+	var roomDetails : Array = roomDetailsIn.split(" ");
+	
 	var distToWall : Vector3;
 	var roomHub : Vector3 = transform.position;
 	var roomAxis: Quaternion = transform.rotation;
