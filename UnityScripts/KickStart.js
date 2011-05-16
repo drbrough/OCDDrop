@@ -10,16 +10,21 @@ function Start ()
 	
 	constructor.setFactory(GetComponent(Fabricator));
 	
-	var test = new Array();
+	//var test =  "10 8 0 0 0 -1 :;:;:;:;";//"10 8 0 0 0 -1 :7.0,3;:3.0,2;:2.0,1;:5.0,5;";
+	//				10 8 0 0 0 -1 :7.0,3;:3.0,2;:2.0,1;:5.0,5;
+		
+	//roomDepth : float, roomWidth : float, roomID : long, roomHubX : float, roomHubZ : float, from : int, roomDoors : Array
+	//constructor.buildRoom(test);
 	
-	var doors = new Array();
-	doors[0] = [[7.0, 3]];
-	doors[1] = [[3.0, 2]];
-	doors[2] = [[2.0, 1]];
-	doors[3] = [[5.0, 5]];
+	echo("Pingo!! was his name O!");
 	
-	constructor.buildRoom(10, 8, 0, doors, -1, 0, 0);
+	Application.ExternalCall("getRoom", 0, 0, 0, -1);	
 	
 	transform.position += Vector3(0, 10, 0);
 	transform.LookAt(Vector3(0,0,0));
+}
+
+function echo(peat)
+{
+	Application.ExternalCall("feedback", peat);
 }

@@ -26,7 +26,7 @@ private var seenIt = new Array();
  * First divide the parameter into useful constitutant parts and then uses those parts to create the room
  * @ param: String consisting of roomDepth : float, roomWidth : float, roomID : long, roomHubX : float, roomHubZ : float, from : int, roomDoors : Array
  */
-function buildRoom (roomDetailsIn : String)
+function buildRoom (roomDetails)
 {
 	//variables for detailing the room
 	var roomDepth : float;
@@ -38,60 +38,20 @@ function buildRoom (roomDetailsIn : String)
 	
 	var from : int;
 	
-	var allDoors : String;
-	
-	var roomDoors = new Array(4);
-	var roomDetails : Array = roomDetailsIn.Split(" "[0]);
-	var doorsDivByDir : Array;
-	var doorsOfWall : Array;
-	var finallyDoor : Array;
-	var thisDoorDetails : Array;
+	var roomDoors : Array;
 	
 	var distToWall : Vector3;
 	var roomHub : Vector3 = transform.position;
 	var roomAxis: Quaternion = transform.rotation;
 	
 	//assign the pertinent details to the variables
-	roomDepth = float.Parse(roomDetails[0]);
-	roomWidth = float.Parse(roomDetails[1]);
-	roomID = long.Parse(roomDetails[2]);
-	roomHubX = float.Parse(roomDetails[3]);
-	roomHubZ = float.Parse(roomDetails[4]);
-	from = int.Parse(roomDetails[5]);
-	allDoors = roomDetails[6];
-Debug.Log("The allDoors details are: " + allDoors);
-	
-	//add door division here
-	doorsDivByDir = allDoors.Split(":"[0]);
-	
-	var orient = 0;
-	for(dir in doorsDivByDir)
-	{
-		if(dir.length > 0)
-		{
-			roomDoors[orient] = new Array();
-			
-Debug.Log("The dir details are: " + dir);
-			doorsOfWall = dir.Split(";"[0]);
-Debug.Log("The doorsOfWall details are: [0]" + doorsOfWall[0] + " [1]" + doorsOfWall[1]);
-			
-			for(thisDoor in doorsOfWall)
-			{
-				if(thisDoor.length > 0)
-				{
-Debug.Log("The thisDoor details are: " + thisDoor);
-					thisDoorDetails = thisDoor.Split(","[0]);
-Debug.Log("The thisDoorDetails details are: [0]" + thisDoorDetails[0] + " [1]" + thisDoorDetails[1]);
-Debug.Log("Orientation = " + orient);
-					
-					roomDoors[orient].push(new Array(float.Parse(thisDoorDetails[0]), long.Parse(thisDoorDetails[1])));
-				}
-			}
-			
-			++orient;
-		}
-	}
-	
+	roomDepth = roomDetails.length;
+	roomWidth = roomDetails.width;
+	roomID = roomDetails.roomID;
+	roomHubX = roomDetails.XPos;
+	roomHubZ = roomDetails.ZPos;
+	from = roomDetails.from;
+	roomDoors = roomDetails.doors;
 	
 	//calculate the position of the room in reference to the Avatar
 	roomHub += Vector3(roomHubX, 0, roomHubZ);
