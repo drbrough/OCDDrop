@@ -59,7 +59,6 @@ function buildRoom (roomDetailsIn : String)
 	roomHubZ = float.Parse(roomDetails[4]);
 	from = int.Parse(roomDetails[5]);
 	allDoors = roomDetails[6];
-Debug.Log("The allDoors details are: " + allDoors);
 	
 	//add door division here
 	doorsDivByDir = allDoors.Split(":"[0]);
@@ -71,18 +70,13 @@ Debug.Log("The allDoors details are: " + allDoors);
 		{
 			roomDoors[orient] = new Array();
 			
-Debug.Log("The dir details are: " + dir);
 			doorsOfWall = dir.Split(";"[0]);
-Debug.Log("The doorsOfWall details are: [0]" + doorsOfWall[0] + " [1]" + doorsOfWall[1]);
 			
 			for(thisDoor in doorsOfWall)
 			{
 				if(thisDoor.length > 0)
 				{
-Debug.Log("The thisDoor details are: " + thisDoor);
 					thisDoorDetails = thisDoor.Split(","[0]);
-Debug.Log("The thisDoorDetails details are: [0]" + thisDoorDetails[0] + " [1]" + thisDoorDetails[1]);
-Debug.Log("Orientation = " + orient);
 					
 					roomDoors[orient].push(new Array(float.Parse(thisDoorDetails[0]), long.Parse(thisDoorDetails[1])));
 				}
