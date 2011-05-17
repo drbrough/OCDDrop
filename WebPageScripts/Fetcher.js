@@ -13,7 +13,7 @@ var toWallX = [0.0, 1.0, 0.0, -1.0];
 var toWallZ = [1.0, 0.0, -1.0, 0.0];
 
 var counter = 0;
-
+document.getElementById("myDiv").innerHTML="asdf";
 function getRoom(roomID, doorX, doorZ, facing)
 {
 	var doors = new Array(4);//to be extracted from results set
@@ -22,12 +22,20 @@ function getRoom(roomID, doorX, doorZ, facing)
 	var roomX;		//float: to be calculated later
 	var roomZ;		//float: to be calculated later
 	var doorPos;	//float: to be extracted from doors[(facing+2)%4]
-	var roomDetails = new Object();	
+	var roomDetails = new String("");	
+	var doorString = new String("");
 	var constructor = GetUnity();
+	var tempDoor;
+	var useLess;
 	//get the room details via PHP script call to the DB and populate the variables
-	
+	document.getElementById("myDiv2").innerHTML="asdf";
 	var ajax = new XMLHttpRequest();
 	var params = "output="+roomID;
+	
+	for (var i=0; i<doors.length; i++)
+	{
+		doors[i]=new Array();
+	}
 	
 	ajax.onreadystatechange=function()						//NOT TESTED BUT SHOULD WORK
 	{
@@ -38,41 +46,57 @@ function getRoom(roomID, doorX, doorZ, facing)
 			
 			//1st word is the length, 2nd word is breadth/width, 3rd is wall no. 4th is position, 5th is room_to, 6th is again wall no. and so on...
 			
-			roomLength = Number(room[0]);	
-			roomWidth = Number(room[1]);
+			roomLength = room[0];	
+			roomWidth = room[1];
 			
-			for (var i=2; i<room.length-1; i+=3)
+			for (i=2; i<room.length-1; i+=3)
 			{
-				doors[Number(room[i])]=[[Number(room[i+1]),Number(room[i+2])]];					
-			}	
+				tempDoor = new Array(Number(room[i+1]),Number(room[i+2]));
+				useLess = doors[Number(room[i])].push(tempDoor);							
+			}
+			
 			//populate other variables
-			if(doors[(facing+2)%4] != null)
+			if(facing > -1)
 			{
 				doorPos = doors[(facing+2)%4][0][0];
+				
+				roomX = doorX + roomWidth / 2 * toWallX[facing] + toWallX[facing] / 2 +
+							toWallX[(facing + 1) % 4] * doorPos + toWallX[(facing + 3) % 4] * roomWidth / 2;//+ offset from center
+							
+				roomZ = doorZ + roomLength / 2 * toWallZ[facing] + toWallZ[facing] / 2 +
+							toWallZ[(facing + 1) % 4] * doorPos + toWallZ[(facing + 3) % 4] * roomLength / 2;//+ offset from center
 			}
 			else
 			{
 				doorPos = 0;
+				roomX = 0;
+				roomZ = 0;
 			}
 			
+			for (i=0; i<doors.length; i++)
+			{
+				
+				for (j=0; j<doors[i].length;j++)
+				{
+					doorString += doors[i][j].join() + ";";
+				}
+				doorString += ":";
+			}
 			//calculate the center of the new room in relation the Avatar's origional position
-			roomX = doorX + roomWidth / 2 * toWallX[facing] + toWallX[facing] / 2 +
-							toWallX[(facing + 1) % 4] * doorPos + toWallX[(facing + 3) % 4] * roomWidth / 2;//+ offset from center
-							
-			roomZ = doorZ + roomLength / 2 * toWallZ[facing] + toWallZ[facing] / 2 +
-							toWallZ[(facing + 1) % 4] * doorPos + toWallZ[(facing + 3) % 4] * roomLength / 2;//+ offset from center
-
-			roomDetails.length = roomLength;
-			roomDetails.width = roomWidth;
-			roomDetails.roomID = roomID;
-			roomDetails.XPos = roomX;
-			roomDetails.ZPos = roomZ;
-			roomDetails.doors = doors;
-			roomDetails.from = facing;
+			
+			roomDetails += roomLength;
+			roomDetails += (" " + roomWidth);
+			roomDetails += (" " + roomID);
+			roomDetails += (" " + roomX);
+			roomDetails += (" " + roomZ);
+			roomDetails += (" " + facing);
+		
+			roomDetails += (" " + doorString);
 			
 			//make the call now that we have all of the variables
 			
-			constructor.SendMessage("Avatar", "BuildRoom", roomDetails);
+			constructor.SendMessage("Avatar", "buildRoom", roomDetails);
+			document.getElementById("myDiv").innerHTML=roomDetails;
 			counter++;
 		}
 	}
@@ -85,10 +109,10 @@ function getRoom(roomID, doorX, doorZ, facing)
 
 }
 
-/*function getFurniture(furnitureID)
+function called(string)
 {
-	
-}*/
+	alert(string);
+}
 
 /*function getTreatment(treatmentID : long)
 {
