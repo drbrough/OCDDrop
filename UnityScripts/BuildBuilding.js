@@ -60,30 +60,36 @@ function buildRoom (roomDetailsIn : String)
 	from = int.Parse(roomDetails[5]);
 	allDoors = roomDetails[6];
 	
+Application.ExternalCall("called", "Making room "+roomID);
+	
 	//add door division here
 	doorsDivByDir = allDoors.Split(":"[0]);
 	
+	for (var i=0; i<roomDoors.length; i++)
+	{
+		roomDoors[i]=new Array();
+	}
+	
 	var orient = 0;
+	
 	for(dir in doorsDivByDir)
 	{
-		if(dir.length > 0)
+
+		if(dir.Length > 0)
 		{
-			roomDoors[orient] = new Array();
 			
 			doorsOfWall = dir.Split(";"[0]);
-			
+
 			for(thisDoor in doorsOfWall)
-			{
-				if(thisDoor.length > 0)
-				{
+			{	
+				if(thisDoor.Length > 0)
+				{					
 					thisDoorDetails = thisDoor.Split(","[0]);
-					
 					roomDoors[orient].push(new Array(float.Parse(thisDoorDetails[0]), long.Parse(thisDoorDetails[1])));
 				}
-			}
-			
-			++orient;
+			}			
 		}
+		++orient;
 	}
 	
 	

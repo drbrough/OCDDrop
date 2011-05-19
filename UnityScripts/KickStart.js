@@ -16,12 +16,12 @@ function Start ()
 	//roomDepth : float, roomWidth : float, roomID : long, roomHubX : float, roomHubZ : float, from : int, roomDoors : Array
 	//constructor.buildRoom(test);
 	
-	echo("Pingo!! was his name O!");
-	
+	//echo("Pingo!! was his name O!");
+	//transform.position += Vector3(0, 10, 0);
+	//transform.LookAt(Vector3(0,0,0));	
 	Application.ExternalCall("getRoom", 0, 0, 0, -1);	
+
 	
-	transform.position += Vector3(0, 10, 0);
-	transform.LookAt(Vector3(0,0,0));
 }
 
 function echo(peat)
