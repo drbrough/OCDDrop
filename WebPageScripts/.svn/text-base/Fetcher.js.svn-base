@@ -1,0 +1,88 @@
+/*
+ * Fetcher.js
+ *
+ * David Brough
+ * Jay Agrawal
+ * of OCDevs Project Group
+ * 24/4/2011
+ */
+ 
+ 
+//directional orienting based on the facing input
+var toWallX = [0.0, 1.0, 0.0, -1.0];
+var toWallZ = [1.0, 0.0, -1.0, 0.0];
+
+function getRoom(roomID, doorX, doorZ, facing)
+{
+	var constructor = GetUnity(); //getting a handle on the unity Object
+	
+	var doors = new Array();//to be extracted from results set
+	var roomWidth;	//float: to be extracted from results set
+	var roomLength;	//float: to be extracted from results set
+	var roomX;			//float: to be calculated later
+	var roomY;			//float: to be calculated later
+	var doorPos;		//float: to be extracted from doors[(facing+2)%4]
+	
+	//get the room details via PHP script call to the DB and populate the variables
+	
+	var ajax = new XMLHttpRequest();
+	var params = "output="+roomID;
+	
+	
+			
+	ajax.onreadystatechange=function()						//NOT TESTED BUT SHOULD WORK
+	{
+		if (ajax.readyState==4 && ajax.status==200)
+		{
+			var room = (ajax.responseText).split(" ");		//split the response string into words in an array
+			
+			//1st word is the length, 2nd word is breadth/width, 3rd is wall no. 4th is position, 5th is room_to, 6th is again wall no. and so on...
+			roomLength = room[0];	
+			roomWidth = room[1];
+			
+			for (i=2; i<room.length-1; i+=3)
+			{
+				doors[Number(room[i])]=[[Number(room[i+1]),Number(room[i+2])]];//The Number() function might not behave, 			
+			}						
+		}
+	}
+	
+	ajax.open("POST","../PHPScripts/getRoom.php",true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.setRequestHeader("Content-length", params.length);
+	ajax.setRequestHeader("Connection", "close");
+	ajax.send(params);			
+
+	
+	//populate other variables
+	doorPos = doors[(facing+2)%4][0][0];
+	
+	//calculate the center of the new room in relation the Avatar's origional position
+	roomX = doorX + roomWidth / 2 * toWallX[facing] + toWallX[facing] / 2 +
+					toWallX[(facing + 1) % 4] * doorPos + toWallX[(facing + 3) % 4] * roomWidth / 2;//+ offset from center
+					
+	roomZ = doorZ + roomLength / 2 * toWallZ[facing] + toWallZ[facing] / 2 +
+					toWallZ[(facing + 1) % 4] * doorPos + toWallZ[(facing + 3) % 4] * roomLength / 2;//+ offset from center
+
+	//make the call now that we have all of the variables
+	constructor.sendMessage("Avatar", "buildRoom", roomWidth, roomLength, roomID, doors, facing, roomX, roomZ);
+	//constructor.buildRoom(roomWidth, roomLength, roomID, doors, facing, roomX, roomZ);
+}
+
+function getFurniture(furnatureID)
+{
+	var item = new Array();
+}
+
+/*function getTreatment(treatmentID : long)
+{
+	var constructor = unityObject.getObjectById("UnityContent");
+	var roomWidth : float;
+	var roomLength : float;
+	var roomID : float;
+	var doors : Array;
+	
+	//get the room details via PHP script call to the DB and then populate the variables from the results
+	
+	constructor.sendMessage("Avatar", "buildRoom", roomWidth, roomLength, roomID, doors, -1, 0, 0);
+}*/
