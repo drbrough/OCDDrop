@@ -14,22 +14,28 @@ var toWallZ = [1.0, 0.0, -1.0, 0.0];
 
 var counter = 0;
 document.getElementById("myDiv").innerHTML="asdf";
+
+//function to add the rooms to the building
 function getRoom(roomID, doorX, doorZ, facing)
 {
-	var doors = new Array(4);//to be extracted from results set
 	var roomWidth;	//float: to be extracted from results set
 	var roomLength;	//float: to be extracted from results set
 	var roomX;		//float: to be calculated later
 	var roomZ;		//float: to be calculated later
 	var doorPos;	//float: to be extracted from doors[(facing+2)%4]
+	
+	var doors = new Array(4);//to be extracted from results set
+	
 	var roomDetails = new String("");	
 	var doorString = new String("");
+	//currently just a placeholder to put a box into the middle of the room at the default rotation
+	var furnishingString = new String("");
+	
 	var constructor = GetUnity();
 	var tempDoor;
 	var useLess;
 	
 	//get the room details via PHP script call to the DB and populate the variables
-	document.getElementById("myDiv2").innerHTML="asdf";
 	var ajax = new XMLHttpRequest();
 	var params = "output="+roomID;
 	
@@ -43,7 +49,7 @@ function getRoom(roomID, doorX, doorZ, facing)
 		if ((ajax.readyState==4 && ajax.status==200))
 		{
 			
-			var room = (ajax.responseText).split(" ");		//split the response string into words in an array
+			var room = (ajax.responseText).split(" ");//split the response string into words in an array
 			
 			//1st word is the length, 2nd word is breadth/width, 3rd is wall no. 4th is position, 5th is room_to, 6th is again wall no. and so on...
 			roomLength = parseFloat(room[0]);
@@ -85,7 +91,15 @@ function getRoom(roomID, doorX, doorZ, facing)
 				}
 				doorString += ":";
 			}
-			//calculate the center of the new room in relation the Avatar's origional position
+			
+			if(roomID == 0)
+			{
+				furnishingString = ";";
+			}
+			else
+			{
+				furnishingString = "DaBox,0,0,0;";
+			}
 			
 			roomDetails += roomLength;
 			roomDetails += (" " + roomWidth);
@@ -95,10 +109,10 @@ function getRoom(roomID, doorX, doorZ, facing)
 			roomDetails += (" " + facing);
 		
 			roomDetails += (" " + doorString);
+			roomDetails += (" " + furnishingString);
 			
 			//make the call now that we have all of the variables
 			constructor.SendMessage("Avatar", "buildRoom", roomDetails);
-			document.getElementById("myDiv").innerHTML=roomDetails;
 			counter++;
 		}
 	}
@@ -108,9 +122,10 @@ function getRoom(roomID, doorX, doorZ, facing)
 	ajax.setRequestHeader("Content-length", params.length);
 	ajax.setRequestHeader("Connection", "close");
 	ajax.send(params);			
-
 }
 
+
+//debugging output function
 function called(string)
 {
 	alert(string);

@@ -39,6 +39,8 @@ function buildRoom (roomDetailsIn : String)
 	var from : int;
 	
 	var allDoors : String;
+	var allFurnishings : String;
+	var furnishing : String;
 	
 	var roomDoors = new Array(4);
 	var roomDetails : Array = roomDetailsIn.Split(" "[0]);
@@ -46,9 +48,10 @@ function buildRoom (roomDetailsIn : String)
 	var doorsOfWall : Array;
 	var finallyDoor : Array;
 	var thisDoorDetails : Array;
+	var furniture : Array;
 	
 	var distToWall : Vector3;
-	var roomHub : Vector3 = transform.position;
+	var roomHub : Vector3 = Vector3.zero;
 	var roomAxis: Quaternion = transform.rotation;
 	
 	//assign the pertinent details to the variables
@@ -59,22 +62,22 @@ function buildRoom (roomDetailsIn : String)
 	roomHubZ = float.Parse(roomDetails[4]);
 	from = int.Parse(roomDetails[5]);
 	allDoors = roomDetails[6];
-	
-Application.ExternalCall("called", "Making room "+roomID);
-	
-	//add door division here
+	allFurnishings = roomDetails[7];
+//GetComponent(KickStart).echo("PING! passed in: " + allFurnishings);
+
+
+	//divide allDoors into it's individual walls here
 	doorsDivByDir = allDoors.Split(":"[0]);
 	
-	for (var i=0; i<roomDoors.length; i++)
+	//prepare the recieving array
+	for (var i = 0; i < roomDoors.length; i++)
 	{
 		roomDoors[i]=new Array();
 	}
 	
 	var orient = 0;
-	
 	for(dir in doorsDivByDir)
 	{
-
 		if(dir.Length > 0)
 		{
 			
@@ -92,9 +95,23 @@ Application.ExternalCall("called", "Making room "+roomID);
 		++orient;
 	}
 	
-	
 	//calculate the position of the room in reference to the Avatar
 	roomHub += Vector3(roomHubX, 0, roomHubZ);
+	
+	//divide the furnishing into individual items
+	furnature = allFurnishings.Split(";"[0]);
+	
+	for(furnishing in furnature)
+	{
+		if(furnishing.length > 0)
+		{
+			//weed out the ID, X, Z and rotation coordinates
+			var item = furnishing.Split(","[0]);
+			
+			//call addFurnishing with the appropiate parameters: ID : String, XPos : float, ZPos : float, rotation : int, roomCenter : Vector3, roomRotation : Quaternion
+			addFurnishing(item[0], float.Parse(item[1]), float.Parse(item[2]), float.Parse(item[3]), roomHub, roomAxis);
+		}
+	}
 	
 	//update the room tracker so as not to go in circles
 	seenIt.push(roomID);
@@ -116,12 +133,12 @@ Application.ExternalCall("called", "Making room "+roomID);
 		//add the wall
 		if (way % 2 != 0)
 		{
-			distToWall = toWall[way] * (roomDepth / 2) + nudge[way];
+			distToWall = toWall[way] * (roomDepth / 2) - toWall[way] * 0.01 + nudge[way];
 			addWall(roomDoors[way], roomWidth, distToWall, roomHub, roomAxis, way, roomID);
 		}
 		else
 		{
-			distToWall = toWall[way] * (roomWidth / 2)+ nudge[way];			
+			distToWall = toWall[way] * (roomWidth / 2) - toWall[way] * 0.01 + nudge[way];			
 			addWall(roomDoors[way], roomDepth, distToWall, roomHub, roomAxis, way, roomID);
 		}
 	}
@@ -245,7 +262,7 @@ function addWall(doors : Array, roomWidth : float, toThisWall : Vector3 , wallCe
 	else
 	{
 		//just put a solid wall there and update the number of walls
-		wallHandle = Instantiate(factory.getItem("wall"), wallCenter + toThisWall, roomRotation);
+		wallHandle = Instantiate(factory.getItem("wall"), wallCenter + toThisWall , roomRotation);
 		wallHandle.transform.localScale += Vector3(roomWidth - 1, 0, 0);
 		wallHandle.transform.LookAt(wallCenter);
 		wallHandle.name = "wallNumber" + wallNum;
@@ -258,6 +275,7 @@ function addWall(doors : Array, roomWidth : float, toThisWall : Vector3 , wallCe
 
 //indexation of the door
 var doorNum = 0;
+
 //add the door in the position and with the rotation required
 function addDoor(location : Vector3, doorRot : Quaternion, facing : int)
 {
@@ -275,4 +293,22 @@ function addDoor(location : Vector3, doorRot : Quaternion, facing : int)
 	
 	//update the door count
 	++doorNum;
+}
+
+//function to place the furnishing of the room
+function addFurnishing(ID : String, XPos : float, ZPos : float, tor : int, roomCenter : Vector3, roomRotation : Quaternion)
+{
+	//find the height that the item should be sitting at
+	var template = factory.getItem("ceiling");
+	var heightAdjust;
+	
+	//apply appropiate rotations
+	//roomRotation + tor
+	
+	//get the appropiate Game object from the fabricator and instansiate it at the appropiate coordinates with a handle for further adjustments
+	var removalist = Instantiate(template, roomCenter + Vector3(XPos, 0, ZPos), roomRotation);
+
+	//have the object meet the floor
+	heightAdjust = removalist.transform.lossyScale.y - 2 + 0.05;
+	removalist.transform.Translate(Vector3.up * heightAdjust, Space.World);
 }

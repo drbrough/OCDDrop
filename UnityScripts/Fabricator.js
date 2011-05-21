@@ -15,6 +15,7 @@ var dull : GameObject;
 var floor : GameObject;
 var roomLight : GameObject;
 var wall : GameObject;
+var daBox : GameObject;
 
 function getItem(ident)
 {
@@ -26,6 +27,10 @@ function getItem(ident)
 			handle = ceiling;
 			break;
 		
+		case "DaBox":
+			handle = daBox;
+			break;
+			
 		case "door":
 			handle = door;
 			break;

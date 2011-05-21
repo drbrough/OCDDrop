@@ -19,12 +19,10 @@ function Start ()
 	//echo("Pingo!! was his name O!");
 	//transform.position += Vector3(0, 10, 0);
 	//transform.LookAt(Vector3(0,0,0));	
-	Application.ExternalCall("getRoom", 0, 0, 0, -1);	
-
-	
+	Application.ExternalCall("getRoom", 0, 0, 0, -1);
 }
 
 function echo(peat)
 {
-	Application.ExternalCall("feedback", peat);
+	Application.ExternalCall("called", peat);
 }
