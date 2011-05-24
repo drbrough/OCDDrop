@@ -54,7 +54,7 @@ function buildRoom (roomDetailsIn : String)
 	
 	var distToWall : Vector3;
 	var roomHub : Vector3 = Vector3.zero;
-	var roomAxis: Quaternion = transform.rotation;
+	var roomAxis: Quaternion = Quaternion.identity;
 	
 	//assign the pertinent details to the variables
 	roomDepth = float.Parse(roomDetails[0]);
